@@ -1,0 +1,31 @@
+<JUG>
+	<NumberOf>
+		50
+	</NumberOf>
+	<Victim>
+		Bod'ka
+	</Victim>
+	<Theme>
+		tet
+	</Theme>
+	<Count>
+		<Name>Bohdan</Name>
+		<Topic>Mule</Topic>
+		<Number>1</Number>
+	</Count>
+	<Count>
+		<Name>Bohdan</Name>
+		<Topic>Mule2</Topic>
+		<Number>2</Number>
+	</Count>
+	<Count>
+		<Name>Bohdan</Name>
+		<Topic>Mule3</Topic>
+		<Number>3</Number>
+	</Count>
+	<Count>
+		<Name>Bohdanna</Name>
+		<Topic>Mule4</Topic>
+		<Number>4</Number>
+	</Count>
+</JUG>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The flow will be: file-input (xml) -> xslt -> splitter, exception -> error, file -->
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mule-xml="http://www.mulesoft.org/schema/mule/sxc"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.1/mule-http.xsd
+                          http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/3.1/mule-xml.xsd
+                          http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd
+                          http://www.mulesoft.org/schema/mule/vm      http://www.mulesoft.org/schema/mule/vm/3.1/mule-vm.xsd
+                          http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.1/mule-file.xsd">
+
+    <mulexml:xslt-transformer name="jugTransform"
+                              xsl-file="jugTransform.xsl"
+                              outputEncoding="UTF-8" ignoreBadInput="false" encoding="UTF-8" maxIdleTransformers="2"
+                              maxActiveTransformers="3">
+        <mulexml:xslt-text/>
+    </mulexml:xslt-transformer>
+
+    <vm:endpoint name="fInput.inbound" path="fInput.inbound"/>
+    <vm:endpoint name="splitter.inbound" path="splitter.inbound"/>
+
+    <mulexml:object-to-xml-transformer name="ObjectToXml" acceptMuleMessage="true"/>
+    <object-to-string-transformer/>
+
+    <flow name="File Input Flow">
+        <file:inbound-endpoint path="/tmp/input" pollingFrequency="1000"/>
+        <transformer ref="jugTransform"/>
+        <vm:outbound-endpoint ref="splitter.inbound"/>
+    </flow>
+
+    <flow name="Split Flow">
+        <vm:inbound-endpoint ref="splitter.inbound"/>
+        <object-to-string-transformer/>
+        <splitter evaluator="xpath" expression="//NewJug/NewLine"/>
+        <log-component/>
+        <vm:outbound-endpoint ref="fInput.inbound"/>
+    </flow>
+
+    <flow name="File Output">
+        <vm:inbound-endpoint ref="fInput.inbound"/>
+        <file:outbound-endpoint path="/tmp/output" outputPattern="#[function:datestamp].xml"/>
+    </flow>
+
+</mule>
