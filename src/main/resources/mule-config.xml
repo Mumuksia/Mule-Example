@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+      xmlns:jersey="http://www.mulesoft.org/schema/mule/jersey"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.1/mule-http.xsd
+                          http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/3.1/mule-xml.xsd
+                          http://www.mulesoft.org/schema/mule/jersey http://www.mulesoft.org/schema/mule/jersey/3.1/mule-jersey.xsd
+                          http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd
+                          http://www.mulesoft.org/schema/mule/vm      http://www.mulesoft.org/schema/mule/vm/3.1/mule-vm.xsd
+                          http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.1/mule-file.xsd">
+
+    <mulexml:xslt-transformer name="jugTransform"
+                              xsl-file="jugTransform.xsl"
+                              outputEncoding="UTF-8" ignoreBadInput="false" encoding="UTF-8" maxIdleTransformers="2"
+                              maxActiveTransformers="3">
+        <mulexml:xslt-text/>
+    </mulexml:xslt-transformer>
+
+    <vm:endpoint name="processXML.inbound" path="processXML.inbound"/>
+    <vm:endpoint name="processHTML.inbound" path="processHTML.inbound"/>
+    <vm:endpoint name="processFile.inbound" path="processFile.inbound"/>
+
+    <mulexml:object-to-xml-transformer name="ObjectToXml" acceptMuleMessage="true"/>
+    <object-to-string-transformer/>
+
+    <flow name="REST_XSLT_example_Flow">
+        <http:inbound-endpoint host="localhost" port="48310" contentType="text/html" keep-alive="false"
+                               responseTimeout="10000" encoding="UTF-8" disableTransportTransformer="false"
+                               exchange-pattern="request-response">
+            <not-filter>
+                <wildcard-filter pattern="/favicon.ico"/>
+            </not-filter>
+        </http:inbound-endpoint>
+        <jersey:resources>
+            <component class="jug.JugFunService"/>
+        </jersey:resources>
+
+<!--        <logger level="INFO" message="Header Content-Type = #[header:Content-Type]"/>
+        <choice>
+            <when expression="Content-Type=application/xml" evaluator="header">
+                <logger level="INFO" message="Apply XSLT Transformer"/>
+                <transformer ref="jugTransform"/>
+            </when>
+            <when expression="Content-Type=text/xml" evaluator="header">
+                <logger level="INFO" message="Continue Processing"/>
+            </when>
+            <otherwise>
+                <logger level="INFO" message="Continue Processing"/>
+            </otherwise>
+        </choice>-->
+
+    </flow>
+
+    <flow name="Process XML">
+        <vm:inbound-endpoint ref="processXML.inbound"/>
+        <object-to-string-transformer/>
+        <logger level="INFO" message="Continue XML Processing"/>
+        <vm:outbound-endpoint ref="processFile.inbound"/>
+    </flow>
+
+    <flow name="Process HTML">
+        <vm:inbound-endpoint ref="processHTML.inbound"/>
+        <object-to-string-transformer/>
+        <logger level="INFO" message="Continue HTML Processing"/>
+        <vm:outbound-endpoint ref="processFile.inbound"/>
+    </flow>
+
+    <flow name="File OutPut">
+        <vm:inbound-endpoint ref="processFile.inbound"/>
+        <file:outbound-endpoint path="/tmp/output" outputPattern="#[function:datestamp].txt"/>
+    </flow>
+</mule>
