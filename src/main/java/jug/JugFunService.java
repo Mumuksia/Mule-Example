@@ -34,7 +34,7 @@ public class JugFunService implements JugFunInterface {
     }
 
     @GET
-    @Path("/GetFunFromHTML")
+    @Path("/GetFunFromHTML/{topic}")
     @Consumes(MediaType.TEXT_HTML)
     @Produces(MediaType.APPLICATION_XML)
     public JUGstats getCurrentBankRateHTML(@PathParam("topic") String topic) throws RemoteException, MuleException {
