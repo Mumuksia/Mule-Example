@@ -18,7 +18,7 @@ public interface JugFunInterface {
     @Path("/GetFunFromXML")
     @Consumes(MediaType.TEXT_HTML)
     @Produces(MediaType.TEXT_XML)
-    public JUGstats getCurrentBankRateXML(@PathParam("counter") String counter) throws RemoteException, MuleException;
+    public JUGstats getSomethingXML(@PathParam("counter") String counter) throws RemoteException, MuleException;
 
     /**
      * @return String
@@ -28,5 +28,5 @@ public interface JugFunInterface {
     @Path("/GetFunFromHTML")
     @Consumes(MediaType.TEXT_HTML)
     @Produces(MediaType.APPLICATION_XML)
-    public JUGstats getCurrentBankRateHTML(@PathParam("counter") String counter) throws RemoteException, MuleException;
+    public JUGstats getSomethingHTML(@PathParam("counter") String counter) throws RemoteException, MuleException;
 }

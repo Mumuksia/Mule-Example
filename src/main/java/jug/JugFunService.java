@@ -28,7 +28,7 @@ public class JugFunService implements JugFunInterface {
     @Path("/GetFunFromXML/{topic}")
     @Consumes(MediaType.TEXT_HTML)
     @Produces(MediaType.TEXT_XML)
-    public JUGstats getCurrentBankRateXML(@PathParam("topic") String topic) throws RemoteException, MuleException {
+    public JUGstats getSomethingXML(@PathParam("topic") String topic) throws RemoteException, MuleException {
         RequestContext.getEventContext().sendEventAsync(createMessage(new JUGstats(50, "Bod'ka", topic)), ENDPOINT_NAME_XML, TIMEOUT);
         return new JUGstats(50, "Bod'ka", topic);
     }
@@ -37,7 +37,7 @@ public class JugFunService implements JugFunInterface {
     @Path("/GetFunFromHTML/{topic}")
     @Consumes(MediaType.TEXT_HTML)
     @Produces(MediaType.APPLICATION_XML)
-    public JUGstats getCurrentBankRateHTML(@PathParam("topic") String topic) throws RemoteException, MuleException {
+    public JUGstats getSomethingHTML(@PathParam("topic") String topic) throws RemoteException, MuleException {
         RequestContext.getEventContext().sendEventAsync(createMessage(new JUGstats(70, topic, "Doggy")), ENDPOINT_NAME_HTML, TIMEOUT);
         return new JUGstats(50, "Bod'ka", topic);
     }
